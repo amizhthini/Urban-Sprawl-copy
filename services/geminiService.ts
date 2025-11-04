@@ -1,12 +1,7 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import type { GtaPopulationData } from '../types';
 
 export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopulationData> {
-  if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-  }
-
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   const prompt = `
@@ -25,10 +20,10 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
         - Future population projections and trends.
     4.  Historical population data for the last 5 years and projected data for the next 5 years for a chart. For each year, provide the year, population, and whether the data is 'historical' or 'projected'.
     5.  Exactly 3 predictions about the future of urban sprawl in ${location}, based on the context provided. Each prediction needs a short, insightful title and a detailed description (around 40-50 words).
-    6.  Exactly 3 predicted growth hotspots for the next 10 years, ensuring they are STRICTLY WITHIN the geographical boundaries of ${location}. For example, if the location is "Toronto", only provide hotspots within Toronto, not in neighboring cities like Vaughan or Mississauga. For each hotspot, provide:
+    6.  Exactly 3 predicted growth hotspots for the next 10 years. These predictions must be hyper-realistic and well-founded. Crucially, they must be STRICTLY WITHIN the geographical boundaries of ${location}. Do not suggest locations in adjacent municipalities. For each hotspot, provide:
         - 'name': A human-readable name for the area (e.g., "East Harbour").
         - 'locationQuery': A highly specific, Google Maps-searchable string for the location (e.g., "East Harbour, Toronto, ON" or "Don Roadway and Lake Shore Boulevard East, Toronto"). This is critical for map accuracy.
-        - 'reason': A detailed explanation of why it will grow, considering laws, politics, availability, and the provided context.
+        - 'reason': A detailed explanation of why this specific area will experience significant growth. Your reasoning MUST be grounded in the principles from the 'Context on Urban Sprawl Prediction' provided above. Explicitly consider factors like local zoning laws, political initiatives, major transit projects (like new subway lines), housing availability/affordability, and the potential for redevelopment of underutilized land.
 
     Return the entire response as a single JSON object.
   `;
@@ -120,6 +115,6 @@ export async function fetchGtaPopulationInfo(location: string): Promise<GtaPopul
 
   } catch (error) {
     console.error("Error fetching data from Gemini API:", error);
-    throw new Error("Failed to retrieve population data. The API may be unavailable or the request failed.");
+    throw new Error("Failed to retrieve population data. The API may be unavailable or the request failed. Please ensure your API key is configured correctly in the environment settings.");
   }
 }
